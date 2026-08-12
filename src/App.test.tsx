@@ -1,18 +1,29 @@
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import App from './App'
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { test, expect } from "vitest";
+import "@testing-library/jest-dom";
+import App from "./App";
+import { data } from "./services/data"
 
-test('renders heading and increments counter', async () => {
-  const user = userEvent.setup()
+test("renders heading and increments counter", async () => {
+  const user = userEvent.setup();
 
-  render(<App />)
+  render(<App />);
 
   expect(
-    screen.getByRole('heading', { name: /resource centre/i }),
-  ).toBeInTheDocument()
-  expect(screen.getByRole('button', { name: /count is 0/i })).toBeInTheDocument()
+    screen.getByRole("heading", { name: /resource centre/i }),
+  ).toBeInTheDocument();
+});
 
-  await user.click(screen.getByRole('button', { name: /count is 0/i }))
+function getResourceCardButtons() {
+  return screen.getAllByRole('button').filter((button) => {
+    const label = button.getAttribute('aria-label') ?? ''
+    return data.some((item) => label.startsWith(`${item.title},`))
+  })
+}
 
-  expect(screen.getByRole('button', { name: /count is 1/i })).toBeInTheDocument()
+test('loads all resources', () => {
+  render(<App />)
+
+  expect(getResourceCardButtons()).toHaveLength(data.length);
 })

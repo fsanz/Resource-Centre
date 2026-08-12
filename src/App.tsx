@@ -1,24 +1,32 @@
-import { useState } from 'react'
+import { useState } from "react";
+import AppHeader from "./components/AppHeader";
+import { data as initialData } from "./services/data";
+import ResourceCard from "./components/ResourceCard";
+import type { ContentItem } from "./types";
+import EmptyResourceList from "./components/EmptyResourceList";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [resources] = useState<ContentItem[]>(initialData);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-slate-950 px-4 text-slate-100">
-      <h1 className="text-4xl font-bold tracking-tight">Resource Centre</h1>
-      <p className="text-slate-400">
-        Edit <code className="rounded bg-slate-800 px-2 py-1">src/App.tsx</code>{' '}
-        and save to test HMR
-      </p>
-      <button
-        type="button"
-        className="rounded-lg bg-violet-600 px-4 py-2 font-medium transition hover:bg-violet-500"
-        onClick={() => setCount((value) => value + 1)}
-      >
-        Count is {count}
-      </button>
-    </main>
-  )
+    <div className="min-h-screen bg-[#fbfcfb] text-slate-900">
+      <AppHeader />
+
+      <main id="main-content" className="mx-auto max-w-xl px-5 pb-28">
+        <section className="mt-8 space-y-8" aria-label="Resource listings">
+          {!resources.length ? (
+            <EmptyResourceList />
+          ) : (
+          <div className="space-y-3">
+            {resources.map((resource) => (
+              <ResourceCard key={resource.id} resource={resource} />
+            ))}
+          </div>
+          )}
+        </section>
+      </main>
+    </div>
+  );
 }
 
-export default App
+export default App;
