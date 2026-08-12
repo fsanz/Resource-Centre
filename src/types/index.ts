@@ -27,3 +27,17 @@ export type TagProps = {
 export type ResourceCardProps = {
   resource: ContentItem;
 };
+
+export type SortOption = 'newest' | 'oldest' | 'category';
+
+export type ResourceListingsProps = {
+  resources: ContentItem[];
+  sort: SortOption;
+};
+
+export type ResourceCategorySectionProps = {
+  category: ContentCategory;
+  items: ContentItem[];
+};
+
+export type GroupedResources = Partial<Record<ContentCategory, ContentItem[]>>

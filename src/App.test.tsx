@@ -27,3 +27,17 @@ test('loads all resources', () => {
 
   expect(getResourceCardButtons()).toHaveLength(data.length);
 })
+
+test('shows grouped categories', () => {
+  render(<App />)
+  
+  // gets a list of categories from the data
+  const categoriesInData = [...new Set(data.map((item) => item.category))]
+
+  // checks every category from the data is on screen
+  for (const category of categoriesInData) {
+    expect(
+      screen.getByRole('heading', { name: category, level: 3 }),
+    ).toBeInTheDocument()
+  }
+})
