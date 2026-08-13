@@ -42,6 +42,9 @@ Please add at least two of the following features
 
 # Stack and commands
 
+## Link to the Task
+- [preview](https://fsanz.github.io/Resource-Centre/)
+
 ## Stack
 
 - React + TypeScript (Vite)
