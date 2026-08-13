@@ -17,7 +17,7 @@ test("renders heading and increments counter", async () => {
 });
 
 function getResourceCardButtons() {
-  return screen.getAllByRole("button").filter((button) => {
+  return screen.queryAllByRole("button").filter((button) => {
     const label = button.getAttribute("aria-label") ?? "";
     return data.some((item) => label.startsWith(`${item.title},`));
   });
@@ -50,6 +50,7 @@ test("shows grouped categories", () => {
   }
 });
 
+// Filter
 test("loads all resources sorted by newest date", async () => {
   const user = userEvent.setup();
   render(<App />);
@@ -60,7 +61,6 @@ test("loads all resources sorted by newest date", async () => {
   );
 
   expect(getResourceCardButtons()).toHaveLength(data.length);
-
   for (const resource of data) {
     expect(
       screen.getByRole("button", {
@@ -69,7 +69,7 @@ test("loads all resources sorted by newest date", async () => {
     ).toBeInTheDocument();
   }
 
-  const expectedOrder = filterAndSortResources(data, "All", "newest").map(
+  const expectedOrder = filterAndSortResources(data, "All", "newest", "").map(
     (item) => item.title,
   );
   expect(getDisplayedTitles()).toEqual(expectedOrder);
@@ -85,7 +85,7 @@ test("sorts resources by oldest date", async () => {
     "oldest",
   );
 
-  const expectedOrder = filterAndSortResources(data, "All", "oldest").map(
+  const expectedOrder = filterAndSortResources(data, "All", "oldest", "").map(
     (item) => item.title,
   );
   expect(getDisplayedTitles()).toEqual(expectedOrder);
@@ -107,4 +107,102 @@ test("shows grouped categories when sorting by category", async () => {
       screen.getByRole("heading", { name: category, level: 3 }),
     ).toBeInTheDocument();
   }
+});
+
+// Search Bar
+test("shows message when no resources are found", async () => {
+  const user = userEvent.setup();
+
+  render(<App />);
+
+  await user.type(
+    screen.getByRole("searchbox", { name: /search resources/i }),
+    "nonexistent query",
+  );
+
+  expect(getResourceCardButtons()).toHaveLength(0);
+  expect(screen.getByText("No resources found")).toBeInTheDocument();
+  expect(
+    screen.getByText("Try another title, tag or category."),
+  ).toBeInTheDocument();
+});
+
+test("filters resources by title", async () => {
+  const user = userEvent.setup();
+
+  render(<App />);
+  // Check if the number of resources is correct
+  expect(getResourceCardButtons()).toHaveLength(data.length);
+
+  // Check if the search input is in the screen
+  const searchInput = screen.getByRole("searchbox", {
+    name: /search resources/i,
+  });
+  // Type the search input and check if the number of resources is correct
+  await user.type(searchInput, "Mindful Moments");
+  // Check if the number of resources is correct
+  expect(getResourceCardButtons()).toHaveLength(1);
+  // Check if the resource is in the screen
+  expect(
+    screen.getByRole("button", { name: /^Mindful Moments,/i }),
+  ).toBeInTheDocument();
+  // Check if the resource is not in the screen
+  expect(
+    screen.queryByRole("button", { name: /^The Science of Sleep,/i }),
+  ).not.toBeInTheDocument();
+
+  await user.clear(searchInput);
+  await user.type(searchInput, "science of sleep");
+
+  expect(getResourceCardButtons()).toHaveLength(1);
+  expect(
+    screen.getByRole("button", { name: /^The Science of Sleep,/i }),
+  ).toBeInTheDocument();
+
+  await user.clear(searchInput);
+  await user.type(searchInput, "nonexistent title");
+
+  expect(getResourceCardButtons()).toHaveLength(0);
+  expect(
+    screen.getByRole("heading", { name: /no resources found/i }),
+  ).toBeInTheDocument();
+});
+
+test("filters resources by tag", async () => {
+  const user = userEvent.setup();
+
+  render(<App />);
+
+  const searchInput = screen.getByRole("searchbox", {
+    name: /search resources/i,
+  });
+
+  await user.type(searchInput, "mindfulness");
+
+  expect(getResourceCardButtons()).toHaveLength(2);
+  expect(
+    screen.getByRole("button", { name: /^Mindful Moments,/i }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole("button", { name: /^Wellness Weekly,/i }),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: /^The Science of Sleep,/i }),
+  ).not.toBeInTheDocument();
+
+  await user.clear(searchInput);
+  await user.type(searchInput, "mobility");
+
+  expect(getResourceCardButtons()).toHaveLength(1);
+  expect(
+    screen.getByRole("button", { name: /^10-Minute Morning Stretch,/i }),
+  ).toBeInTheDocument();
+
+  await user.clear(searchInput);
+  await user.type(searchInput, "nonexistent-tag");
+
+  expect(getResourceCardButtons()).toHaveLength(0);
+  expect(
+    screen.getByRole("heading", { name: /no resources found/i }),
+  ).toBeInTheDocument();
 });

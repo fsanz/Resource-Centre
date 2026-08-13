@@ -34,6 +34,7 @@ export type ResourceListingsProps = {
   resources: ContentItem[];
   sort: SortOption;
   categoryFilter: string;
+  search: string;
 };
 
 export type ResourceCategorySectionProps = {
@@ -48,4 +49,10 @@ export type ResourceFiltersProps = {
   onCategoryFilterChange: (category: string) => void;
   sort: SortOption;
   onSortChange: (sort: SortOption) => void;
+};
+
+export type ResourceSearchProps = {
+  search: string;
+  onSearchChange: (search: string) => void;
+  resultsStatusId: string;
 };

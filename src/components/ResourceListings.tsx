@@ -13,6 +13,7 @@ export default function ResourceListings({
   resources,
   sort,
   categoryFilter,
+  search,
 }: ResourceListingsProps) {
   const isGroupedView = sort === "category";
 
@@ -29,10 +30,15 @@ export default function ResourceListings({
     return grouped;
   };
 
-  const groupedResources = useMemo(
-    () => groupByCategory(resources),
-    [resources],
+  const filteredResources = useMemo(
+    () => filterAndSortResources(resources, categoryFilter, sort, search),
+    [resources, categoryFilter, sort, search],
   );
+
+  const groupedResources = useMemo(
+    () => groupByCategory(filteredResources),
+    [filteredResources],
+  )
 
   const visibleCategories =
     categoryFilter === "All"
@@ -40,11 +46,6 @@ export default function ResourceListings({
       : categoryOrder.filter(
           (cat) => cat === categoryFilter && groupedResources[cat]?.length,
         );
-
-  const filteredResources = useMemo(
-    () => filterAndSortResources(resources, categoryFilter, sort),
-    [resources, categoryFilter, sort],
-  );
 
   return (
     <section className="mt-8 space-y-8" aria-label="Resource listings">

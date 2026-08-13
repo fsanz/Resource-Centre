@@ -9,12 +9,19 @@ export function filterAndSortResources(
   resources: ContentItem[],
   category: string,
   sort: SortOption,
+  search: string,
 ) {
+  const query = search.trim().toLowerCase();
+
   let filtered = resources.filter((resource) => {
     const matchesCategory =
       category === "All" || resource.category === category;
+    const searchableText = [resource.title, ...resource.tags]
+      .join(" ")
+      .toLowerCase();
+    const matchesSearch = !query || searchableText.includes(query);
 
-    return matchesCategory;
+    return matchesCategory && matchesSearch;
   });
 
   if (sort === "newest") {
