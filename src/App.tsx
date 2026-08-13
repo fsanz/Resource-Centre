@@ -1,30 +1,28 @@
-import { useState } from "react";
-import AppHeader from "./components/AppHeader";
-import { data as initialData } from "./services/data";
-import type { ContentItem, SortOption } from "./types";
-import ResourceListings from "./components/ResourceListings";
-import ResourceFilters from "./components/ResourceFilters";
-import ResourceSearch from "./components/ResourceSearch";
-import ResourceModal from "./components/ResourceModal";
+import { useState } from 'react'
+import AppHeader from './components/AppHeader'
+import ResourceFilters from './components/ResourceFilters'
+import ResourceListings from './components/ResourceListings'
+import ResourceModal from './components/ResourceModal'
+import ResourceSearch from './components/ResourceSearch'
+import { data as initialData } from './services/data'
+import type { ContentItem, SortOption } from './types'
 
 function App() {
-  const [resources] = useState<ContentItem[]>(initialData);
-  const [sort, setSort] = useState<SortOption>("category");
-  const [categoryFilter, setCategoryFilter] = useState("All");
-  const [search, setSearch] = useState("");
-  const [activeResource, setActiveResource] = useState<ContentItem | null>(
-    null,
-  );
+  const [resources] = useState<ContentItem[]>(initialData)
+  const [sort, setSort] = useState<SortOption>('category')
+  const [categoryFilter, setCategoryFilter] = useState('All')
+  const [search, setSearch] = useState('')
+  const [activeResource, setActiveResource] = useState<ContentItem | null>(null)
 
   return (
-    <div className="min-h-screen bg-[#fbfcfb] text-slate-900">
+    <div className='min-h-screen bg-[#fbfcfb] text-slate-900'>
       <AppHeader />
 
-      <main id="main-content" className="mx-auto max-w-xl px-5 pb-28">
+      <main id='main-content' className='mx-auto max-w-xl px-5 pb-28'>
         <ResourceSearch
           search={search}
           onSearchChange={setSearch}
-          resultsStatusId="search-results-status"
+          resultsStatusId='search-results-status'
         />
 
         <ResourceFilters
@@ -45,7 +43,7 @@ function App() {
         <ResourceModal resource={activeResource} onClose={setActiveResource} />
       </main>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
