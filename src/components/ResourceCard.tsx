@@ -1,22 +1,27 @@
 import type { ResourceCardProps, ContentCategory } from "../types";
 import Tag from "./Tag";
 
-export default function ResourceCard({ resource }: ResourceCardProps) {
+export default function ResourceCard({ resource, onOpen }: ResourceCardProps) {
   const label = `${resource.title}, ${resource.category}, ${resource.duration} minutes`;
+
+  function openResource() {
+    onOpen(resource);
+  }
 
   function hasPlayOverlay(category: ContentCategory) {
     return (
-      category === 'Podcasts' ||
-      category === 'Fitness' ||
-      category === 'Meditation'
-    )
+      category === "Podcasts" ||
+      category === "Fitness" ||
+      category === "Meditation"
+    );
   }
-  
+
   return (
     <button
       type="button"
       aria-label={label}
       className="group flex w-full overflow-hidden rounded-2xl border border-slate-200 bg-white text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-md active:scale-[0.995]"
+      onClick={openResource}
     >
       <div className="relative w-[38%] shrink-0">
         <img

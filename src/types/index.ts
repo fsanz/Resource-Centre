@@ -26,6 +26,7 @@ export type TagProps = {
 
 export type ResourceCardProps = {
   resource: ContentItem;
+  onOpen: (resource: ContentItem) => void;
 };
 
 export type SortOption = "newest" | "oldest" | "category";
@@ -35,11 +36,13 @@ export type ResourceListingsProps = {
   sort: SortOption;
   categoryFilter: string;
   search: string;
+  onOpen: (resource: ContentItem) => void;
 };
 
 export type ResourceCategorySectionProps = {
   category: ContentCategory;
   items: ContentItem[];
+  onOpen: (resource: ContentItem) => void;
 };
 
 export type GroupedResources = Partial<Record<ContentCategory, ContentItem[]>>;
@@ -55,4 +58,9 @@ export type ResourceSearchProps = {
   search: string;
   onSearchChange: (search: string) => void;
   resultsStatusId: string;
+};
+
+export type ResourceModalProps = {
+  resource: ContentItem | null;
+  onClose: (resource: ContentItem | null) => void;
 };

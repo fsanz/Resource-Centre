@@ -14,6 +14,7 @@ export default function ResourceListings({
   sort,
   categoryFilter,
   search,
+  onOpen,
 }: ResourceListingsProps) {
   const isGroupedView = sort === "category";
 
@@ -57,12 +58,13 @@ export default function ResourceListings({
             key={category}
             category={category}
             items={groupedResources[category]!}
+            onOpen={onOpen}
           />
         ))
       ) : (
         <div className="space-y-3">
           {filteredResources.map((resource) => (
-            <ResourceCard key={resource.id} resource={resource} />
+            <ResourceCard key={resource.id} resource={resource} onOpen={onOpen} />
           ))}
         </div>
       )}

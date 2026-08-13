@@ -4,6 +4,7 @@ import ResourceCard from "./ResourceCard";
 export default function ResourceCategorySection({
   category,
   items,
+  onOpen,
 }: ResourceCategorySectionProps) {
   return (
     <section aria-labelledby={`category-${category}`}>
@@ -20,7 +21,7 @@ export default function ResourceCategorySection({
 
       <div className="space-y-3">
         {items.map((resource) => (
-          <ResourceCard key={resource.id} resource={resource} />
+          <ResourceCard key={resource.id} resource={resource} onOpen={onOpen} />
         ))}
       </div>
     </section>
