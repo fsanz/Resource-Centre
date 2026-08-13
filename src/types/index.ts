@@ -28,11 +28,12 @@ export type ResourceCardProps = {
   resource: ContentItem;
 };
 
-export type SortOption = 'newest' | 'oldest' | 'category';
+export type SortOption = "newest" | "oldest" | "category";
 
 export type ResourceListingsProps = {
   resources: ContentItem[];
   sort: SortOption;
+  categoryFilter: string;
 };
 
 export type ResourceCategorySectionProps = {
@@ -40,4 +41,11 @@ export type ResourceCategorySectionProps = {
   items: ContentItem[];
 };
 
-export type GroupedResources = Partial<Record<ContentCategory, ContentItem[]>>
+export type GroupedResources = Partial<Record<ContentCategory, ContentItem[]>>;
+
+export type ResourceFiltersProps = {
+  categoryFilter: string;
+  onCategoryFilterChange: (category: string) => void;
+  sort: SortOption;
+  onSortChange: (sort: SortOption) => void;
+};

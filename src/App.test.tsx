@@ -3,7 +3,8 @@ import userEvent from "@testing-library/user-event";
 import { test, expect } from "vitest";
 import "@testing-library/jest-dom";
 import App from "./App";
-import { data } from "./services/data"
+import { data } from "./services/data";
+import { filterAndSortResources } from "./utils/resources";
 
 test("renders heading and increments counter", async () => {
   const user = userEvent.setup();
@@ -16,28 +17,94 @@ test("renders heading and increments counter", async () => {
 });
 
 function getResourceCardButtons() {
-  return screen.getAllByRole('button').filter((button) => {
-    const label = button.getAttribute('aria-label') ?? ''
-    return data.some((item) => label.startsWith(`${item.title},`))
-  })
+  return screen.getAllByRole("button").filter((button) => {
+    const label = button.getAttribute("aria-label") ?? "";
+    return data.some((item) => label.startsWith(`${item.title},`));
+  });
 }
 
-test('loads all resources', () => {
-  render(<App />)
+function getDisplayedTitles() {
+  return getResourceCardButtons().map((button) => {
+    const label = button.getAttribute("aria-label")!;
+    return data.find((item) => label.startsWith(`${item.title},`))!.title;
+  });
+}
+
+test("loads all resources", () => {
+  render(<App />);
 
   expect(getResourceCardButtons()).toHaveLength(data.length);
-})
+});
 
-test('shows grouped categories', () => {
-  render(<App />)
-  
+test("shows grouped categories", () => {
+  render(<App />);
+
   // gets a list of categories from the data
-  const categoriesInData = [...new Set(data.map((item) => item.category))]
+  const categoriesInData = [...new Set(data.map((item) => item.category))];
 
   // checks every category from the data is on screen
   for (const category of categoriesInData) {
     expect(
-      screen.getByRole('heading', { name: category, level: 3 }),
-    ).toBeInTheDocument()
+      screen.getByRole("heading", { name: category, level: 3 }),
+    ).toBeInTheDocument();
   }
-})
+});
+
+test("loads all resources sorted by newest date", async () => {
+  const user = userEvent.setup();
+  render(<App />);
+
+  await user.selectOptions(
+    screen.getByRole("combobox", { name: /sort resources/i }),
+    "newest",
+  );
+
+  expect(getResourceCardButtons()).toHaveLength(data.length);
+
+  for (const resource of data) {
+    expect(
+      screen.getByRole("button", {
+        name: new RegExp(`^${resource.title},`, "i"),
+      }),
+    ).toBeInTheDocument();
+  }
+
+  const expectedOrder = filterAndSortResources(data, "All", "newest").map(
+    (item) => item.title,
+  );
+  expect(getDisplayedTitles()).toEqual(expectedOrder);
+});
+
+test("sorts resources by oldest date", async () => {
+  const user = userEvent.setup();
+
+  render(<App />);
+
+  await user.selectOptions(
+    screen.getByRole("combobox", { name: /sort resources/i }),
+    "oldest",
+  );
+
+  const expectedOrder = filterAndSortResources(data, "All", "oldest").map(
+    (item) => item.title,
+  );
+  expect(getDisplayedTitles()).toEqual(expectedOrder);
+});
+
+test("shows grouped categories when sorting by category", async () => {
+  const user = userEvent.setup();
+
+  render(<App />);
+
+  await user.selectOptions(
+    screen.getByRole("combobox", { name: /sort resources/i }),
+    "category",
+  );
+
+  const categoriesInData = [...new Set(data.map((item) => item.category))];
+  for (const category of categoriesInData) {
+    expect(
+      screen.getByRole("heading", { name: category, level: 3 }),
+    ).toBeInTheDocument();
+  }
+});

@@ -1,28 +1,20 @@
 import { useMemo } from "react";
 import type {
   ResourceListingsProps,
-  ContentCategory,
   ContentItem,
   GroupedResources,
 } from "../types";
 import ResourceCard from "./ResourceCard";
 import EmptyResourceList from "./EmptyResourceList";
 import ResourceCategorySection from "./ResourceCategorySection";
+import { categoryOrder, filterAndSortResources } from "../utils/resources";
 
 export default function ResourceListings({
   resources,
   sort,
+  categoryFilter,
 }: ResourceListingsProps) {
   const isGroupedView = sort === "category";
-
-  const categoryOrder: ContentCategory[] = [
-    'Podcasts',
-    'Articles',
-    'Newsletters',
-    'Recipes',
-    'Fitness',
-    'Meditation',
-  ];
 
   const groupByCategory = (resources: ContentItem[]): GroupedResources => {
     const grouped: GroupedResources = {};
@@ -42,13 +34,21 @@ export default function ResourceListings({
     [resources],
   );
 
-  const visibleCategories = categoryOrder.filter(
-    (cat) => groupedResources[cat]?.length,
+  const visibleCategories =
+    categoryFilter === "All"
+      ? categoryOrder.filter((cat) => groupedResources[cat]?.length)
+      : categoryOrder.filter(
+          (cat) => cat === categoryFilter && groupedResources[cat]?.length,
+        );
+
+  const filteredResources = useMemo(
+    () => filterAndSortResources(resources, categoryFilter, sort),
+    [resources, categoryFilter, sort],
   );
 
   return (
     <section className="mt-8 space-y-8" aria-label="Resource listings">
-      {!resources.length ? (
+      {!filteredResources.length ? (
         <EmptyResourceList />
       ) : isGroupedView ? (
         visibleCategories.map((category) => (
@@ -60,7 +60,7 @@ export default function ResourceListings({
         ))
       ) : (
         <div className="space-y-3">
-          {resources.map((resource) => (
+          {filteredResources.map((resource) => (
             <ResourceCard key={resource.id} resource={resource} />
           ))}
         </div>
